@@ -141,7 +141,7 @@
                   $localStorage.credentials = response.data;
                   $rootScope.$broadcast('user.login', $localStorage.credentials)
                   $rootScope.user = response.data.user;
-                  $localStorage.loginAttempts = 0;
+                  resetLoginAttempts();
                 },
                 function(error) {
                   $localStorage.loginAttempts = ($localStorage.loginAttempts || 0) + 1;
@@ -149,8 +149,6 @@
                   if ($localStorage.loginAttempts >= 5) {
                     $localStorage.lockoutTimestamp = new Date().getTime();
                   }
-                  
-                  throw error;
                 }
               )
               ;

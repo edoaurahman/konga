@@ -63,7 +63,9 @@
             if (response.status === 401 || response.status === 403) {
 
               if(response.data && response.data.logout) {
-                $localStorage.$reset();
+                delete $localStorage.credentials;
+                delete $localStorage.notifications;
+                delete $localStorage.settings;
 
                 var $state = $injector.get('$state');
 
