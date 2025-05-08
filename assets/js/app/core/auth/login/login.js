@@ -47,6 +47,12 @@
                 // Scope function to perform actual login request to server
                 $scope.login = function login() {
                     $scope.busy = true;
+
+                    if($scope.hasExceededAttempts()) {
+                        $scope.busy = false;
+                        return;
+                    }
+
                     AuthService
                         .login($scope.credentials)
                         .then(
@@ -63,19 +69,12 @@
                 };
 
                 /**
-                 * Maximum number of login attempts
-                 *
-                 * @type {number}
-                 */
-                $scope.maxLoginAttempts = 5;
-
-                /**
                  * Checks if user has exceeded maximum number of login attempts
                  * 
                  * @returns {boolean}
                  */
                 $scope.hasExceededAttempts = function () {
-                    return AuthService.getLoginAttempts() >= $scope.maxLoginAttempts;
+                    return AuthService.hasExceededAttempts();
                 };
 
 

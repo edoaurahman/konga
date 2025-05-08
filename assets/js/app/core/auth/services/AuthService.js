@@ -145,7 +145,7 @@
                 },
                 function(error) {
                   $localStorage.loginAttempts = ($localStorage.loginAttempts || 0) + 1;
-
+                  
                   if ($localStorage.loginAttempts >= 5) {
                     $localStorage.lockoutTimestamp = new Date().getTime();
                   }
@@ -161,7 +161,9 @@
            * Question still: Should we make logout process to backend side?
            */
           logout: function logout() {
-            $localStorage.$reset();
+            delete $localStorage.credentials;
+            delete $localStorage.notifications;
+            delete $localStorage.settings;
             MessageService.success('You have logged out.');
             $rootScope.user = null;
             $state.go('auth.login');
@@ -172,8 +174,8 @@
            * 
            * @returns {Number}
            */
-          getLoginAttempts: function () {
-            return $localStorage.loginAttempts;
+          hasExceededAttempts: function () {
+            return $localStorage.loginAttempts >= 5;
           },
 
           getLockoutTimeRemaining: function () {
