@@ -63,6 +63,40 @@
                 };
 
                 /**
+                 * Maximum number of login attempts
+                 *
+                 * @type {number}
+                 */
+                $scope.maxLoginAttempts = 5;
+
+                /**
+                 * Checks if user has exceeded maximum number of login attempts
+                 * 
+                 * @returns {boolean}
+                 */
+                $scope.hasExceededAttempts = function () {
+                    return AuthService.getLoginAttempts() >= $scope.maxLoginAttempts;
+                };
+
+                /**
+                 * Function to get lockout time remaining
+                 * 
+                 * @returns {number}
+                 */
+                $scope.getLockoutTimeRemaining = function() {
+                    return AuthService.getLockoutTimeRemaining();
+                };
+
+                /**
+                 * Function to check if user is locked out
+                 * 
+                 * @returns {boolean}
+                 */
+                $scope.isLockedOut = function () {
+                    return $scope.getLockoutTimeRemaining() > 0;
+                };
+
+                /**
                  * Private helper function to reset credentials and set focus to username input.
                  *
                  * @private

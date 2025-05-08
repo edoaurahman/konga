@@ -7,6 +7,46 @@
       'AccessLevels', 'BackendConfig', 'MessageService',
       function factory($http, $state, $localStorage, $rootScope,
                        AccessLevels, BackendConfig, MessageService) {
+
+        /**
+         * Variable to keep track of login attempts
+         * 
+         * @type {Number}
+         */
+        let loginAttempts = 0;
+
+        /**
+         * Variable to keep track of lockout timestamp
+         * 
+         * @type {Number}
+         */
+        let lockoutTimestamp = null;
+
+        /**
+         * Function to get remaining lockout time
+         * 
+         * @returns {Number}
+         */
+        function getLockoutTimeRemaining() {
+          if (!lockoutTimestamp) return 0;
+        
+          const now = new Date().getTime();
+          const timeDiff = now - lockoutTimestamp;
+          const timeRemaining = 600000 - timeDiff;
+        
+          return timeRemaining > 0 ? timeRemaining : 0;
+        }
+
+        /**
+         * Function to reset login attempts
+         * 
+         * @returns {void}
+         */
+        function resetLoginAttempts() {
+          loginAttempts = 0;
+          lockoutTimestamp = null;
+        }
+        
         return {
           /**
            * Method to authorize current user with given access level in application.
@@ -103,6 +143,10 @@
            * @returns {*|Promise}
            */
           login: function login(credentials) {
+            if(this.getLockoutTimeRemaining() > 0) {
+              return $q.reject('Too many login attempts. Please wait before trying again.');
+            }
+
             return $http
               .post('login', credentials, {withCredentials: true})
               .then(
@@ -111,6 +155,17 @@
                   $localStorage.credentials = response.data;
                   $rootScope.$broadcast('user.login', $localStorage.credentials)
                   $rootScope.user = response.data.user;
+                  loginAttempts = 0;
+                },
+                function(error) {
+                  loginAttempts++;
+
+                  if (loginAttempts >= 5) {
+                    lockoutTimestamp = new Date().getTime();
+                  }
+                  
+                  MessageService.error('Login failed. Attempt #' + loginAttempts, 'Please try again.');
+                  throw error;
                 }
               )
               ;
@@ -127,7 +182,20 @@
             MessageService.success('You have logged out.');
             $rootScope.user = null;
             $state.go('auth.login');
-          }
+          },
+
+          /**
+           * Returns number of login attempts
+           * 
+           * @returns {Number}
+           */
+          getLoginAttempts: function () {
+            return loginAttempts;
+          },
+
+          getLockoutTimeRemaining: function () {
+            return getLockoutTimeRemaining();
+          },
         };
       }
     ])

@@ -42,10 +42,18 @@
     <div class="form-group text-center">
         <button class="btn btn-primary btn-flat btn-block"
                 data-ng-click="login()"
-                data-ng-disabled="!loginForm.$valid || busy"
+                data-ng-disabled="!loginForm.$valid || busy || hasExceededAttempts() || isLockedOut()"
         >
             Sign in
         </button>
+
+        <p class="help-block text-danger" ng-if="isLockedOut()">
+            Too many failed login attempts. Please try again in {{ getLockoutTimeRemaining() / 1000 | number:0 }} seconds.
+        </p>
+
+        <p class="help-block text-danger text-center" ng-if="hasExceededAttempts() && !isLockedOut()">
+            Too many failed login attempts. Please try again later.
+        </p>
     </div>
 </form>
 
