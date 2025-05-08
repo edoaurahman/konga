@@ -31,10 +31,16 @@
                    class="form-control password"
                    placeholder="Password" required="required"
                    data-ng-model="credentials.password"
+                   ng-pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/"
             />
         </div>
 
         <p class="help-block no-margin text-left" ng-show="loginForm.password.$touched && loginForm.password.$error.required">Password is required.</p>
+
+        <p class="help-block no-margin text-left"
+            ng-show="loginForm.password.$touched && loginForm.password.$error.pattern">
+            Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.
+        </p>
 
 
     </div>
@@ -47,7 +53,7 @@
             Sign in
         </button>
 
-        <p class="help-block text-danger" ng-if="isLockedOut()">
+        <p class="help-block text-danger text-center" ng-if="isLockedOut()">
             Too many failed login attempts. Please try again in {{ getLockoutTimeFormatted() }}.
         </p>
 
