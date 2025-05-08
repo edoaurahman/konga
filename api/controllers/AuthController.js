@@ -23,7 +23,7 @@ var AuthController = {
         invalidAttributes: {
           username: [{
             rule: 'required',
-            message: 'An adming user is already registered!'
+            message: 'An admin user is already registered!'
           }]
         },
         old_data: data
@@ -33,6 +33,11 @@ var AuthController = {
     function validateEmail(email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(String(email).toLowerCase());
+    }
+
+    function validatePassword(password) {
+      var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+      return re.test(String(password));
     }
 
     // Validations
@@ -59,10 +64,10 @@ var AuthController = {
       }]
     }
 
-    if( data.password.length < 7) {
+    if(!validatePassword(data.password)) {
       invalidAttributes.password = [{
         rule: 'password',
-        message: 'The password must be at least 7 characters long'
+        message: 'Password must be at least 8 characters and include uppercase letters, lowercase letters, and numbers.'
       }]
     }
 
@@ -127,9 +132,15 @@ var AuthController = {
 
     var data = req.allParams()
     var passports = data.passports
+    var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
     delete data.passports;
     delete data.password_confirmation
 
+    if(!re.test(String(passports.password))) {
+      return res.badRequest({
+       error: 'Password must be at least 8 characters and include uppercase letters, lowercase letters, and numbers.'
+     });
+    }
 
     // Assign activation token
     data.activationToken = uuidv4();

@@ -22,6 +22,7 @@ module.exports = function createUser(request, response, next) {
 
     var password = request.body.passports.password
     var confirmation = request.body.password_confirmation
+    var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
     sails.log('[Policy.createUser()] -> password : ' + password);
     sails.log('[Policy.createUser()] -> confirmation : ' + confirmation);
@@ -42,36 +43,19 @@ module.exports = function createUser(request, response, next) {
         return next(error);
     }
 
-    if (password.length < 7) {
+    if (!re.test(String(password))) {
         var error = new Error();
-
+  
         error.Errors = {
-            password: [
-                {
-                    message: 'The password must be at least 7 characters long.'
-                }
-            ]
-        }
-
+          password: [
+            {
+              message: "Password must be at least 8 characters and include uppercase letters, lowercase letters, and numbers.",
+            },
+          ],
+        };
         error.status = 400;
-
-        return next(error);
-    }
-
-    if (!alphanum(password)) {
-        var error = new Error();
-
-        error.Errors = {
-            password: [
-                {
-                    message: 'Only alphanumeric characters are allowed'
-                }
-            ]
-        }
-
-        error.status = 400;
-
-        return next(error);
+  
+        next(error);
     }
 
     if (password != confirmation) {

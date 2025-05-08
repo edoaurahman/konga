@@ -32,6 +32,7 @@ module.exports = _.merge(_.cloneDeep(require('../base/Controller')), {
 
         var user = req.body;
         var passports = req.body.passports
+        var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
         // Delete unwanted properties
         delete user.passports
@@ -63,6 +64,12 @@ module.exports = _.merge(_.cloneDeep(require('../base/Controller')), {
 
 
                 if(!passports) return res.json(user)
+                    
+                if(!re.test(String(passports.password))) {
+                   return res.badRequest({
+                    error: 'Password must be at least 8 characters and include uppercase letters, lowercase letters, and numbers.'
+                  });
+                }
 
                 sails.models.passport
                     .update({user:req.param('id')},{password:passports.password})

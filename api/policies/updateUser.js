@@ -16,9 +16,23 @@ module.exports = function updateUser(request, response, next) {
     ? request.body.passports.password
     : null;
   var confirmation = request.body.password_confirmation;
+  var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
   if (password && password != "") {
-    if (password != confirmation) {
+    if (!re.test(String(password))) {
+      var error = new Error();
+
+      error.Errors = {
+        password: [
+          {
+            message: "Password must be at least 8 characters and include uppercase letters, lowercase letters, and numbers.",
+          },
+        ],
+      };
+      error.status = 400;
+
+      next(error);
+    } else if (password != confirmation) {
       var error = new Error();
 
       error.Errors = {
