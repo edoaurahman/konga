@@ -47,6 +47,16 @@
 
               $scope.signup = function() {
                   $scope.busy = true;
+
+                  var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+                  
+                  if(!re.test(String($scope.user.passports.password))){ 
+                      $scope.busy = false;
+                      MessageService.error('Password must be at least 8 characters and include uppercase letters, lowercase letters, and numbers.');
+
+                      return $q.reject('Password must be at least 8 characters and include uppercase letters, lowercase letters, and numbers.');
+                  }
+
                   UserModel
                       .signup(angular.copy($scope.user))
                       .then(
