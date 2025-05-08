@@ -48,7 +48,7 @@
         </button>
 
         <p class="help-block text-danger" ng-if="isLockedOut()">
-            Too many failed login attempts. Please try again in {{ getLockoutTimeRemaining() / 1000 | number:0 }} seconds.
+            Too many failed login attempts. Please try again in {{ getLockoutTimeFormatted() }}.
         </p>
 
         <p class="help-block text-danger text-center" ng-if="hasExceededAttempts() && !isLockedOut()">

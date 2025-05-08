@@ -78,14 +78,6 @@
                     return AuthService.getLoginAttempts() >= $scope.maxLoginAttempts;
                 };
 
-                /**
-                 * Function to get lockout time remaining
-                 * 
-                 * @returns {number}
-                 */
-                $scope.getLockoutTimeRemaining = function() {
-                    return AuthService.getLockoutTimeRemaining();
-                };
 
                 /**
                  * Function to check if user is locked out
@@ -93,8 +85,28 @@
                  * @returns {boolean}
                  */
                 $scope.isLockedOut = function () {
-                    return $scope.getLockoutTimeRemaining() > 0;
+                    return AuthService.getLockoutTimeRemaining() > 0;
                 };
+
+                /**
+                 * Function to get remaining lockout time
+                 * 
+                 * @returns {string}
+                 */
+                $scope.getLockoutTimeFormatted = function() {
+                    var ms = AuthService.getLockoutTimeRemaining();
+                    var totalSeconds = Math.floor(ms / 1000);
+                    var minutes = Math.floor(totalSeconds / 60);
+                    var seconds = totalSeconds % 60;
+                  
+                    var parts = [];
+                    if (minutes > 0) {
+                      parts.push(minutes + ' minute' + (minutes !== 1 ? 's' : ''));
+                    }
+                    parts.push(seconds + ' second' + (seconds !== 1 ? 's' : ''));
+                  
+                    return parts.join(' ');
+                  };
 
                 /**
                  * Private helper function to reset credentials and set focus to username input.

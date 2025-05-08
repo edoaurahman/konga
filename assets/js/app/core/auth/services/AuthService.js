@@ -9,29 +9,15 @@
                        AccessLevels, BackendConfig, MessageService) {
 
         /**
-         * Variable to keep track of login attempts
-         * 
-         * @type {Number}
-         */
-        let loginAttempts = 0;
-
-        /**
-         * Variable to keep track of lockout timestamp
-         * 
-         * @type {Number}
-         */
-        let lockoutTimestamp = null;
-
-        /**
          * Function to get remaining lockout time
          * 
          * @returns {Number}
          */
         function getLockoutTimeRemaining() {
-          if (!lockoutTimestamp) return 0;
+          if (!$localStorage.lockoutTimestamp) return 0;
         
           const now = new Date().getTime();
-          const timeDiff = now - lockoutTimestamp;
+          const timeDiff = now - $localStorage.lockoutTimestamp;
           const timeRemaining = 600000 - timeDiff;
         
           return timeRemaining > 0 ? timeRemaining : 0;
@@ -43,8 +29,8 @@
          * @returns {void}
          */
         function resetLoginAttempts() {
-          loginAttempts = 0;
-          lockoutTimestamp = null;
+          $localStorage.loginAttempts = 0;
+          $localStorage.lockoutTimestamp = null;
         }
         
         return {
@@ -155,16 +141,15 @@
                   $localStorage.credentials = response.data;
                   $rootScope.$broadcast('user.login', $localStorage.credentials)
                   $rootScope.user = response.data.user;
-                  loginAttempts = 0;
+                  $localStorage.loginAttempts = 0;
                 },
                 function(error) {
-                  loginAttempts++;
+                  $localStorage.loginAttempts = ($localStorage.loginAttempts || 0) + 1;
 
-                  if (loginAttempts >= 5) {
-                    lockoutTimestamp = new Date().getTime();
+                  if ($localStorage.loginAttempts >= 5) {
+                    $localStorage.lockoutTimestamp = new Date().getTime();
                   }
                   
-                  MessageService.error('Login failed. Attempt #' + loginAttempts, 'Please try again.');
                   throw error;
                 }
               )
@@ -190,7 +175,7 @@
            * @returns {Number}
            */
           getLoginAttempts: function () {
-            return loginAttempts;
+            return $localStorage.loginAttempts;
           },
 
           getLockoutTimeRemaining: function () {
