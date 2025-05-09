@@ -32,6 +32,92 @@ module.exports = _.merge(_.cloneDeep(require('../base/Controller')), {
       })
   },
 
+  initial: function (req, res) {
+
+    return res.json(
+      {
+        "id": 1,
+        "data": {
+          "signup_enable": false,
+          "signup_require_activation": false,
+          "info_polling_interval": 0,
+          "email_default_sender_name": "KONGA",
+          "email_default_sender": "konga@konga.test",
+          "email_notifications": false,
+          "default_transport": "sendmail",
+          "notify_when": {
+            "node_down": {
+              "title": "A node is down or unresponsive",
+              "description": "Health checks must be enabled for the nodes that need to be monitored.",
+              "active": false
+            },
+            "api_down": {
+              "title": "An API is down or unresponsive",
+              "description": "Health checks must be enabled for the APIs that need to be monitored.",
+              "active": false
+            }
+          },
+          "user_permissions": {
+            "apis": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "services": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "routes": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "consumers": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "plugins": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "upstreams": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "certificates": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "connections": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            },
+            "users": {
+              "create": false,
+              "read": false,
+              "update": false,
+              "delete": false
+            }
+          }
+        }
+      }
+    )
+  },
+
   getIntegrations : function (req,res) {
     sails.models.settings.find().limit(1)
       .exec(function (err, settings) {

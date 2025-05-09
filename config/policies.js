@@ -156,6 +156,7 @@ module.exports.policies = {
   },
 
   SettingsController: {
+    'initial': true,
     'find': ['authenticated', 'isAdmin'],
     '*': ['authenticated', 'isAdmin'],
   },

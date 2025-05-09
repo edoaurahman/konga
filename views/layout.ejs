@@ -116,7 +116,7 @@
       var $http = initInjector.get("$http");
 
       // Load initial configuration to window
-      $http.get('api/settings')
+      $http.get('api/settings/initial')
         .then(function (response) {
           window.KONGA_CONFIG = response.data.data
           window.KONGA_CONFIG_ID = response.data.id
